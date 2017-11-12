@@ -24,25 +24,28 @@
 
 fs = 48e3;          % Sampling frequency
 T  = 1/fs;          % Sampling period
-dur = 0.01;         % Signal duration
+dur = 0.1;          % Signal duration
 Ns = dur*fs;        % Number of samples in the signal
 tv = (0:Ns-1)./fs;  % Time vector
 
 %% Model parameters
 
-R = 100;        % Resistance
+R = 2200;       % Resistance
 C = 0.1e-6;     % Capacitance
-Is = 1e-8;      % Saturation current
+Is = 1e-10;     % Saturation current
 N = 1.2;        % Ideality factor
 Vt = 25e-3;     % Thermal voltage
 
 %% Input/output signals
 
 % Input signal
-u = 3*sin(2*pi*500*tv);
+u = 3*sin(2*pi*100*tv);
 
 % Output defined as vector of zeros to preallocate memory
 y = zeros(size(u));
+
+% Allocate state variable
+x = 0;
 
 %% Processing loop
 for nn=1:Ns
@@ -65,10 +68,10 @@ for nn=1:Ns
     while res>1e-10 && iters < 100
         
         % Calculate the function value
-        f = (u(nn)-yc)/R - (C*T/2)*(yc+yn1) - 2*Is*sinh(yc/(N*Vt));
+        f = (u(nn)-yc)/R - ((2*C/T)*yc) + x - 2*Is*sinh(yc/(N*Vt));
         
         % Calculate it's derivative
-        j = -1/R - (C*T/2) - (2*Is/(N*Vt))*cosh(yc/(N*Vt));
+        j = -1/R - (2*C/T) - (2*Is/(N*Vt))*cosh(yc/(N*Vt));
         
         % Newton step is defined by the function divided by the derivative.
         step = -f/j;
@@ -85,6 +88,9 @@ for nn=1:Ns
     
     % Place solution into output vector
     y(nn) = yc;
+    
+    % Calculate state
+    x = (4*C/T)*yc - x;
 end
 
 %% Plot
