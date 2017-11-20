@@ -2,9 +2,9 @@ clear;
 
 %% Simulation settings
 
-fs = 48e3;          % Sampling frequency
+fs = 2*48e3;        % Sampling frequency
 T  = 1/fs;          % Sampling period
-dur = 2;          % Signal duration
+dur = 2;            % Signal duration
 Ns = dur*fs;        % Number of samples in the signal
 tv = (0:Ns-1)./fs;  % Time vector
 
@@ -12,12 +12,12 @@ tv = (0:Ns-1)./fs;  % Time vector
 
 effect = clipperEffect(fs);
 
-parameters = [0.8*ones(1,Ns);...    % Distortion
+parameters = [1*ones(1,Ns);...    % Distortion
               0.5*ones(1,Ns);...    % Brightness
               linspace(0,1,Ns)];% Warmth
 
 % Input signal
-u = 2*sin(2*pi*1e2*tv);
+u = 1*sin(2*pi*1e2*tv);
 
 tic
 y = effect.simulate(u,parameters);

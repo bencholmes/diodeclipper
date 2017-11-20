@@ -74,9 +74,8 @@ classdef clipperEffect < handle
                     
                     y(nn) = m.dc.simulate(u(nn));
                 end
-                y = y./m.Vforward;
             end
-            
+            y = y./m.Vforward;
         end
     end
     

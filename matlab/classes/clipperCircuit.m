@@ -4,8 +4,9 @@ classdef clipperCircuit < handle
     
     % Simulation model properites
     properties
-        fs = 48e3;      % Sampling frequency
-        x  = 0;         % Model state
+        fs  = 48e3;      % Sampling frequency
+        x   = 0;         % Model state
+        yn1 = 0;         % Last output (for iterative method)
     end
     
     % Circuit model properties
@@ -31,15 +32,10 @@ classdef clipperCircuit < handle
             Ns = length(u);
             y = zeros(1,Ns);
             
-            for nn=1:Ns
-                
-                % If at the start of the loop give the memory a zero value
-                % This is valid as the circuit has no DC offset
-                if nn==1, yn1=0; else, yn1 = y(nn-1); end
-                
+            for nn=1:Ns                
                 % This value sets the initial iterate, i.e. the first guess to the
                 % solution. the previous solution is usually pretty good.
-                yc = yn1;       % Current value of the output (being solved for)
+                yc = m.yn1;       % Current value of the output (being solved for)
                 
                 res = 10;       % set residual above limit of while loop
                 iters = 0;      % set the number of iterations to 0
@@ -71,6 +67,9 @@ classdef clipperCircuit < handle
                 
                 % Place solution into output vector
                 y(nn) = yc;
+                
+                % Update last solution
+                m.yn1 = yc;
                 
                 % Calculate state
                 m.x = (4*m.C*m.fs)*yc - m.x;
